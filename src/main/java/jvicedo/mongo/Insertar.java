@@ -7,9 +7,86 @@ import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class InsertaEjemplos {
-    public static void insertar()
+public class Insertar {
+    public static void insertaUno()
+    {
+        Scanner sc = new Scanner(System.in);
+        MongoClient mongoClient = new MongoClient();
+        MongoDatabase database = mongoClient.getDatabase("Galería");
+        MongoCollection mco = database.getCollection("Obra de Arte");
+        Obra obra;
+        System.out.println("ID:");
+        Long y=(long) sc.nextInt();
+        sc.nextLine();
+        System.out.println("Nombre:");
+        String nombre= sc.nextLine();
+        System.out.println("Autor:");
+        String autor= sc.nextLine();
+        System.out.println("Año de Creación:");
+        int anyo= sc.nextInt();
+        sc.nextLine();
+        System.out.println("Estilo:");
+        String estilo= sc.nextLine();
+        System.out.println("Precio:");
+        double precio= sc.nextDouble();
+        obra = new Obra(y,nombre, autor, anyo, estilo, precio);
+        Document doc = new org.bson.Document("_id", obra.getId())
+                .append("nombre",obra.getNombre().toLowerCase())
+                .append("autor",obra.getAutor().toLowerCase())
+                .append("año de creación",obra.getAnyoCreacion())
+                .append("estilo",obra.getEstilo().toLowerCase())
+                .append("precio de venta", obra.getPrecioVenta());
+        mco.insertOne(doc);
+        mongoClient.close();
+    }
+    public static void InsertaMuchos(int inserciones)
+    {
+        Scanner sc = new Scanner(System.in);
+        MongoClient mongoClient = new MongoClient();
+        MongoDatabase database = mongoClient.getDatabase("Galería");
+        MongoCollection mco = database.getCollection("Obra de Arte");
+        Obra obra;
+        List<Obra> obras = new ArrayList<Obra>();
+        System.out.println("Introduce a partir de que ID quieres introducir(los demás se pondrán solos):");
+        int idz= sc.nextInt();
+        sc.nextLine();
+        for(int i=0;i<inserciones;i++)
+        {
+            Long y=(long) idz+i;
+            System.out.println("Obra numero["+(i+1)+"]");
+            System.out.println("Nombre:");
+            String nombre= sc.nextLine();
+            System.out.println("Autor:");
+            String autor= sc.nextLine();
+            System.out.println("Año de Creación:");
+            int anyo= sc.nextInt();
+            sc.nextLine();
+            System.out.println("Estilo:");
+            String estilo= sc.nextLine();
+            System.out.println("Precio:");
+            double precio= sc.nextDouble();
+            sc.nextLine();
+            obra = new Obra(y,nombre.toLowerCase().trim(), autor.toLowerCase().trim(), anyo, estilo.toLowerCase().trim(), precio);
+            obras.add(obra);
+        }
+        List<Document> docs = new ArrayList<Document>();
+        for(int i=0;i<obras.size();i++)
+        {
+            obra = obras.get(i);
+            Document doc = new org.bson.Document("_id", obra.getId())
+                    .append("nombre",obra.getNombre().toLowerCase())
+                    .append("autor",obra.getAutor().toLowerCase())
+                    .append("año de creación",obra.getAnyoCreacion())
+                    .append("estilo",obra.getEstilo().toLowerCase())
+                    .append("precio de venta", obra.getPrecioVenta());
+            docs.add(doc);
+        }
+        mco.insertMany(docs);
+        mongoClient.close();
+    }
+    public static void insertaEjemplos()
     {
         MongoClient mongoClient = new MongoClient();
         MongoDatabase database = mongoClient.getDatabase("Galería");
@@ -32,10 +109,10 @@ public class InsertaEjemplos {
         {
             obra = obras.get(i);
             Document doc = new org.bson.Document("_id", obra.getId())
-                    .append("nombre",obra.getNombre())
-                    .append("autor",obra.getAutor())
+                    .append("nombre",obra.getNombre().toLowerCase().trim())
+                    .append("autor",obra.getAutor().toLowerCase().trim())
                     .append("año de creación",obra.getAnyoCreacion())
-                    .append("estilo",obra.getEstilo())
+                    .append("estilo",obra.getEstilo().toLowerCase().trim())
                     .append("precio de venta", obra.getPrecioVenta());
             docs.add(doc);
         }
